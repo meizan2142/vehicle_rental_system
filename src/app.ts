@@ -1,5 +1,6 @@
 import express, { Request, Response } from "express";
 import initDB from "./config/db";
+import { vehicleRoutes } from "./modules/vehicles/vehicle.routes";
 
 const app = express();
 app.use(express.json());
@@ -11,6 +12,9 @@ initDB();
 app.get("/", (req: Request, res: Response) => {
     res.send("Vehicle Rental System - Express Server");
 })
+
+// * Vehicles - CRUD
+app.use("/api/v1/vehicles", vehicleRoutes)
 
 
 // * 404 Route
