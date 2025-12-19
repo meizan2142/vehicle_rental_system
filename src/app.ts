@@ -1,6 +1,7 @@
 import express, { Request, Response } from "express";
 import initDB from "./config/db";
 import { vehicleRoutes } from "./modules/vehicles/vehicle.routes";
+import { userRoutes } from "./modules/users/user.routes";
 
 const app = express();
 app.use(express.json());
@@ -13,9 +14,13 @@ app.get("/", (req: Request, res: Response) => {
     res.send("Vehicle Rental System - Express Server");
 })
 
+// * USERS - CRUD
+app.use("/api/v1/auth/signup", userRoutes);
+
+
 // * Vehicles - CRUD
-app.use("/api/v1/vehicles", vehicleRoutes)
-app.use("/api/v1/vehicles/:id", vehicleRoutes)
+app.use("/api/v1/vehicles", vehicleRoutes);
+app.use("/api/v1/vehicles/:id", vehicleRoutes);
 
 
 // * 404 Route
