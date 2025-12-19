@@ -15,6 +15,7 @@ app.get("/", (req: Request, res: Response) => {
 
 // * Vehicles - CRUD
 app.use("/api/v1/vehicles", vehicleRoutes)
+app.use("/api/v1/vehicles/:id", vehicleRoutes)
 
 
 // * 404 Route

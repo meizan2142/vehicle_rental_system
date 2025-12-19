@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { vehicleServices } from "./vehicle.services";
+import { pool } from "../../config/db";
 
 const createVehicle = async (req: Request, res: Response) => {
     const { vehicle_name, type, registration_number, daily_rent_price, availability_status } = req.body;
@@ -42,9 +43,27 @@ const getVehicles = async (req: Request, res: Response) => {
     }
 }
 
-
+const getSingleVehicle = async (req: Request, res: Response) => {
+    try {
+        const result = await vehicleServices.getSingleVehicle(req.params.id!)
+        if (result.rows.length === 0) {
+            res.status(200).json({
+                success: true,
+                message: "No vehicles found",
+                data: []
+            })
+        }
+        res.json(result.rows[0])
+    } catch (error: any) {
+        res.status(500).json({
+            success: false,
+            message: error.message
+        })
+    }
+}
 
 export const vehicleControllers = {
     createVehicle,
-    getVehicles
+    getVehicles,
+    getSingleVehicle
 }
