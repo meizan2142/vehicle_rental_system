@@ -20,7 +20,6 @@ CREATE TABLE IF NOT EXISTS vehicles (
         CHECK (availability_status = LOWER(availability_status))
 );
 `);
-
 };
 
 
