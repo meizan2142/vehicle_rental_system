@@ -8,5 +8,6 @@ router.post('/', vehicleControllers.createVehicle)
 router.get('/', vehicleControllers.getVehicles)
 router.get('/:id', vehicleControllers.getSingleVehicle)
 router.put('/:id', vehicleControllers.updateSingleVehicle)
+router.delete('/:id', vehicleControllers.deleteSingleTodo)
 
 export const vehicleRoutes = router;
