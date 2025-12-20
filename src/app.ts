@@ -2,6 +2,7 @@ import express, { Request, Response } from "express";
 import initDB from "./config/db";
 import { vehicleRoutes } from "./modules/vehicles/vehicle.routes";
 import { userRoutes } from "./modules/users/user.routes";
+import { authRoutes } from "./modules/auth/auth.routes";
 
 const app = express();
 app.use(express.json());
@@ -16,6 +17,7 @@ app.get("/", (req: Request, res: Response) => {
 
 // * USERS - CRUD
 app.use("/api/v1/auth/signup", userRoutes);
+app.use("/api/v1/auth/signin", authRoutes);
 
 
 // * Vehicles - CRUD
