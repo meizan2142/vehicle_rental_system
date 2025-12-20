@@ -21,10 +21,11 @@ app.use("/api/v1/auth", authRoutes);
 
 // * Users - CRUD
 app.use("/api/v1/users", userRoutes)
+app.use("/api/v1/users/:userId", userRoutes)
 
 // * Vehicles - CRUD
 app.use("/api/v1/vehicles", vehicleRoutes);
-app.use("/api/v1/vehicles/:id", vehicleRoutes);
+app.use("/api/v1/vehicles/:vehicleId", vehicleRoutes);
 
 
 // * 404 Route
