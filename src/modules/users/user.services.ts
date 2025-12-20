@@ -18,13 +18,13 @@ const getSingleUser = async (id: string) => {
     return result;
 }
 
-// const updateSingleUser = async (vehicle_name: string, type: string, registration_number: string, daily_rent_price: number, availability_status: string, id: string) => {
-//     const result = await pool.query(
-//         "UPDATE vehicles SET vehicle_name=$1, type=$2, registration_number=$3, daily_rent_price=$4, availability_status=$5 WHERE id=$6 RETURNING *",
-//         [vehicle_name, type, registration_number, daily_rent_price, availability_status, id]
-//     );
-//     return result;
-// }
+const updateSingleUser = async (name: string, email: string, phone: string, role: string, id: string) => {
+    const result = await pool.query(
+        `UPDATE users SET name=$1, email=$2, phone=$3, role=$4 WHERE id=$5 RETURNING *`,
+        [name, email, phone, role, id]
+    );
+    return result;
+}
 
 // const deleteSingleUser = async (id: string) => {
 //     const result = await pool.query(
@@ -38,5 +38,6 @@ const getSingleUser = async (id: string) => {
 export const userServices = {
     createUser,
     getUsers,
-    getSingleUser
+    getSingleUser, 
+    updateSingleUser
 }

@@ -16,7 +16,6 @@ app.get("/", (req: Request, res: Response) => {
 })
 
 // * Auth Routes
-app.use("/api/v1/auth/signup", userRoutes);
 app.use("/api/v1/auth", authRoutes);
 
 // * Users - CRUD
@@ -25,7 +24,7 @@ app.use("/api/v1/users/:userId", userRoutes)
 
 // * Vehicles - CRUD
 app.use("/api/v1/vehicles", vehicleRoutes);
-app.use("/api/v1/vehicles/:vehicleId", vehicleRoutes);
+app.use("/api/v1/vehicles/:id", vehicleRoutes);
 
 
 // * 404 Route
