@@ -15,10 +15,12 @@ app.get("/", (req: Request, res: Response) => {
     res.send("Vehicle Rental System - Express Server");
 })
 
-// * USERS - CRUD
+// * Auth Routes
 app.use("/api/v1/auth/signup", userRoutes);
-app.use("/api/v1/auth/signin", authRoutes);
+app.use("/api/v1/auth", authRoutes);
 
+// * Users - CRUD
+app.use("/api/v1/users", userRoutes)
 
 // * Vehicles - CRUD
 app.use("/api/v1/vehicles", vehicleRoutes);
