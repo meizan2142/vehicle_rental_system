@@ -8,17 +8,17 @@ export const pool = new Pool({
 const initDB = async () => {
     // * USERS Schema
     await pool.query(`
-        CREATE TABLE IF NOT EXISTS users (
-            id SERIAL PRIMARY KEY,
-            name VARCHAR(100) NOT NULL,
-            email VARCHAR(150) UNIQUE NOT NULL 
-                CHECK (email ~* '^\\S+@\\S+\\.\\S+$' AND email = LOWER(email)),
-            password TEXT NOT NULL 
-                CHECK (LENGTH(password) >= 6),
-            phone TEXT NOT NULL 
-                CHECK (phone ~ '^01[3-9][0-9]{8}$'),
-            role VARCHAR(50) NOT NULL 
-                CHECK (role IN ('admin', 'customer')) CHECK (role = LOWER(role))
+    CREATE TABLE IF NOT EXISTS users (
+        id SERIAL PRIMARY KEY,
+        name VARCHAR(100) NOT NULL,
+        email VARCHAR(150) UNIQUE NOT NULL 
+            CHECK (email ~* '^\\S+@\\S+\\.\\S+$' AND email = LOWER(email)),
+        password TEXT NOT NULL 
+            CHECK (LENGTH(password) >= 6),
+        phone TEXT NOT NULL 
+            CHECK (phone ~ '^01[3-9][0-9]{8}$'),
+        role VARCHAR(50) NOT NULL 
+            CHECK (role IN ('admin', 'customer')) CHECK (role = LOWER(role))
     );
     `);
     // * vehicles Schema
@@ -35,6 +35,20 @@ const initDB = async () => {
         availability_status VARCHAR(50) NOT NULL 
             CHECK (availability_status IN ('available', 'booked')) 
             CHECK (availability_status = LOWER(availability_status))
+);
+`);
+    await pool.query(`
+    CREATE TABLE IF NOT EXISTS bookings (
+        id SERIAL PRIMARY KEY,
+        customer_id INT NOT NULL REFERENCES users(id),
+        vehicle_id INT NOT NULL REFERENCES vehicles(id),
+        rent_start_date DATE NOT NULL,
+        rent_end_date DATE NOT NULL 
+            CHECK (rent_end_date > rent_start_date),
+        total_price NUMERIC NOT NULL 
+            CHECK (total_price > 0),
+        status VARCHAR(20) NOT NULL 
+            CHECK (status IN ('active', 'cancelled', 'returned'))
 );
 `);
 };

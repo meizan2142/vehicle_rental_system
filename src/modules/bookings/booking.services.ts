@@ -1,0 +1,82 @@
+import { pool } from "../../config/db";
+
+const createBooking = async (payload: any) => {
+    const { customer_id, vehicle_id, rent_start_date, rent_end_date } = payload;
+
+    const start = new Date(rent_start_date);
+    const end = new Date(rent_end_date);
+    if (isNaN(start.getTime()) || isNaN(end.getTime())) {
+        throw new Error("Invalid date(s) provided");
+    }
+    if (end < start) {
+        throw new Error("rent_end_date must be the same or after rent_start_date");
+    }
+
+    const msPerDay = 1000 * 60 * 60 * 24;
+    const days = Math.ceil((end.getTime() - start.getTime()) / msPerDay) + 1;
+
+    try {
+        const vRes = await pool.query(
+            "SELECT daily_rent_price, availability_status FROM vehicles WHERE id = $1 FOR UPDATE",
+            [vehicle_id]
+        );
+        if (vRes.rows.length === 0) {
+            throw new Error("Vehicle not found");
+        }
+        const vehicle = vRes.rows[0];
+
+        if (vehicle.availability_status === "booked") {
+            throw new Error("Vehicle currently not available");
+        }
+
+        const overlapQuery = `
+      SELECT 1 FROM bookings
+      WHERE vehicle_id = $1
+        AND status = 'active'
+        AND ($2::timestamptz <= rent_end_date::timestamptz)
+        AND ($3::timestamptz >= rent_start_date::timestamptz)
+      LIMIT 1
+    `;
+        const overlapRes = await pool.query(overlapQuery, [
+            vehicle_id,
+            rent_end_date,
+            rent_start_date,
+        ]);
+        if (overlapRes.rows.length > 0) {
+            throw new Error("Vehicle already booked for the selected dates");
+        }
+
+        const total_price = Number(vehicle.daily_rent_price) * days;
+
+        const insertQuery = `
+      INSERT INTO bookings
+      (customer_id, vehicle_id, total_price, rent_start_date, rent_end_date, status)
+      VALUES ($1, $2, $3, $4, $5, 'active')
+      RETURNING *
+    `;
+        const insertRes = await pool.query(insertQuery, [
+            customer_id,
+            vehicle_id,
+            total_price,
+            rent_start_date,
+            rent_end_date,
+        ]);
+
+        await pool.query(
+            "UPDATE vehicles SET availability_status = 'booked' WHERE id = $1",
+            [vehicle_id]
+        );
+
+        await pool.query("COMMIT");
+        return insertRes.rows[0];
+    } catch (err) {
+        await pool.query("ROLLBACK");
+        throw err;
+    }
+};
+
+
+
+export const bookingServices = {
+    createBooking
+}

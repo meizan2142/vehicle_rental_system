@@ -26,7 +26,7 @@ const getUsers = async (req: Request, res: Response) => {
 }
 const getSingleUser = async (req: Request, res: Response) => {
     try {
-        const result = await userServices.getSingleUser(req.params.id!)
+        const result = await userServices.getSingleUser(req.params.vehicledId!)
         if (result.rows.length === 0) {
             res.status(200).json({
                 success: true,
@@ -46,7 +46,7 @@ const getSingleUser = async (req: Request, res: Response) => {
 const updateSingleUser = async (req: Request, res: Response) => {
     const { name, email, phone, role } = req.body;
     try {
-        const result = await userServices.updateSingleUser(name, email, phone, role, req.params.id!);
+        const result = await userServices.updateSingleUser(name, email, phone, role, req.params.vehicleId!);
         if (result.rows.length === 0) {
             res.status(404).json({
                 success: false,
@@ -70,7 +70,7 @@ const updateSingleUser = async (req: Request, res: Response) => {
 
 const deleteSingleUser = async (req: Request, res: Response) => {
     try {
-        const result = await userServices.deleteSingleUser(req.params.id!)
+        const result = await userServices.deleteSingleUser(req.params.vehicleId!)
         if (result.rowCount === 0) {
             res.status(404).json({
                 success: false,

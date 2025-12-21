@@ -1,10 +1,8 @@
 import { Request, Response } from "express";
 import { vehicleServices } from "./vehicle.services";
-import { pool } from "../../config/db";
 
 const createVehicle = async (req: Request, res: Response) => {
     const { vehicle_name, type, registration_number, daily_rent_price, availability_status } = req.body;
-
     try {
         const result = await vehicleServices.createVehicle(vehicle_name, type, registration_number, daily_rent_price, availability_status);
         res.status(201).json({
