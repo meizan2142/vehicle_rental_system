@@ -16,8 +16,14 @@ const updateSingleUser = async (name: string, email: string, phone: string, role
     return result;
 }
 
+const deleteSingleUser = async (id: string) => {
+    const result = await pool.query(`DELETE FROM users WHERE id = $1`, [id]);
+    return result;
+}
+
 export const userServices = {
     getUsers,
     getSingleUser,
-    updateSingleUser
+    updateSingleUser,
+    deleteSingleUser
 }
