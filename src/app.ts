@@ -20,7 +20,7 @@ app.use("/api/v1/auth", authRoutes);
 
 // * Users - CRUD
 app.use("/api/v1/users", userRoutes)
-app.use("/api/v1/users/:userId", userRoutes)
+// app.use("/api/v1/users/:userId", userRoutes)
 
 // * Vehicles - CRUD
 app.use("/api/v1/vehicles", vehicleRoutes);
