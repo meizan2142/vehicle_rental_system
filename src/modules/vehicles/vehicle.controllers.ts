@@ -24,8 +24,7 @@ const getVehicles = async (req: Request, res: Response) => {
         if (result.rows.length === 0) {
             res.status(200).json({
                 success: true,
-                message: "No vehicles found",
-                data: []
+                message: "No vehicles found"
             })
         }
         res.status(200).json({
@@ -43,15 +42,18 @@ const getVehicles = async (req: Request, res: Response) => {
 
 const getSingleVehicle = async (req: Request, res: Response) => {
     try {
-        const result = await vehicleServices.getSingleVehicle(req.params.id!)
+        const result = await vehicleServices.getSingleVehicle(req.params.vehicleId!)
         if (result.rows.length === 0) {
             res.status(200).json({
                 success: true,
-                message: "No vehicles found",
-                data: []
+                message: "No vehicles found"
             })
         }
-        res.json(result.rows[0])
+        res.status(200).json({
+            success: true,
+            message: "Vehicle retrieved successfully",
+            data: result.rows,
+        });
     } catch (error: any) {
         res.status(500).json({
             success: false,
@@ -63,12 +65,11 @@ const getSingleVehicle = async (req: Request, res: Response) => {
 const updateSingleVehicle = async (req: Request, res: Response) => {
     const { vehicle_name, type, registration_number, daily_rent_price, availability_status } = req.body;
     try {
-        const result = await vehicleServices.updateSingleVehicle(vehicle_name, type, registration_number, daily_rent_price, availability_status, req.params.id as string)
+        const result = await vehicleServices.updateSingleVehicle(vehicle_name, type, registration_number, daily_rent_price, availability_status, req.params.vehicleId as string)
         if (result.rows.length === 0) {
             res.status(200).json({
                 success: true,
-                message: "No vehicles found",
-                data: []
+                message: "No vehicles found"
             })
         }
         res.status(200).json({
@@ -86,13 +87,12 @@ const updateSingleVehicle = async (req: Request, res: Response) => {
 
 const deleteSingleTodo = async (req: Request, res: Response) => {
     try {
-        const result = await vehicleServices.deleteSingleVehicle(req.params.id!)
+        const result = await vehicleServices.deleteSingleVehicle(req.params.vehicleId!)
 
         if (result.rows.length === 0) {
             res.status(200).json({
                 success: true,
-                message: "No vehicles found",
-                data: []
+                message: "No vehicles found"
             })
         }
         res.status(200).json({

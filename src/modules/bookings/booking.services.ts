@@ -19,7 +19,6 @@ const createBooking = async (payload: any) => {
         Math.ceil((end.getTime() - start.getTime()) / MS_PER_DAY) + 1;
 
     try {
-        /** 🔒 Lock vehicle row */
         const vRes = await pool.query(
             `SELECT vehicle_name, daily_rent_price, availability_status FROM vehicles WHERE id = $1 FOR UPDATE`,
             [vehicle_id]
@@ -86,8 +85,59 @@ const createBooking = async (payload: any) => {
 };
 
 
+const getBookings = async () => {
+    const result = await pool.query(`
+
+    SELECT b.id, b.customer_id, b.vehicle_id, b.rent_start_date, b.rent_end_date, b.total_price, b.status,
+    json_build_object(
+    'name',u.name,
+    'email',u.email
+    ) AS customer,
+     json_build_object (
+     'vehicle_name', v.vehicle_name,
+     'registration_number', v.registration_number)  AS vehicle
+  
+ FROM bookings b 
+  JOIN users u ON b.customer_id =u.id
+  JOIN vehicles v ON b.vehicle_id=v.id
+ `);
+
+    result.rows = result.rows.map((b) => ({
+        ...b,
+        total_price: Number(b.total_price),
+    }));
+
+    return result;
+};
+
+const getSingleBooking = async (customerId: number) => {
+    const result = await pool.query(
+        `
+    SELECT b.id, b.customer_id, b.vehicle_id, b.rent_start_date, b.rent_end_date, b.total_price, b.status,
+   
+     json_build_object (
+     'vehicle_name', v.vehicle_name,
+     'registration_number', v.registration_number  , 'type',v.type 
+     )  AS vehicle
+  
+ FROM bookings b 
+  JOIN vehicles v ON b.vehicle_id=v.id WHERE b.customer_id=$1
+ `,
+        [customerId]
+    );
+
+    result.rows = result.rows.map((b) => ({
+        ...b,
+        total_price: Number(b.total_price),
+    }));
+
+    return result;
+};
+
 
 
 export const bookingServices = {
-    createBooking
+    createBooking,
+    getBookings, 
+    getSingleBooking
 }
