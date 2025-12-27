@@ -1,0 +1,67 @@
+import { Request, Response } from "express";
+import { bookingServices } from "./booking.services";
+
+const createBooking = async (req: Request, res: Response) => {
+    try {
+        const data = req.body;
+        const result = await bookingServices.createBooking(data);
+        res.status(201).json({
+            success: true,
+            message: "Booking created successfully",
+            data: result,
+        });
+    } catch (error: any) {
+        console.error(error);
+        res.status(500).json({
+            success: false,
+            message: "Failed to create booking",
+            error: error.message
+        });
+    }
+};
+
+const getBookings = async (req: Request, res: Response) => {
+    try {
+        const loggedInUser = req.user!;
+
+        // ADMIN
+        if (loggedInUser.role === "admin") {
+            const result = await bookingServices.getAllBookingsForAdmin();
+
+            return res.status(200).json({
+                success: true,
+                message: "Bookings retrieved successfully",
+                role: "admin",
+                data: result.rows,
+            });
+        }
+
+        // CUSTOMER (IMPORTANT)
+        const result = await bookingServices.getBookingsForCustomer(
+            loggedInUser.id
+        );
+
+        return res.status(200).json({
+            success: true,
+            message: "Your bookings retrieved successfully",
+            role: "customer",
+            data: result.rows,
+        });
+
+    } catch (error: any) {
+        return res.status(500).json({
+            success: false,
+            message: error.message,
+        });
+    }
+};
+
+
+
+
+
+
+export const bookingControllers = {
+    createBooking,
+    getBookings
+}
