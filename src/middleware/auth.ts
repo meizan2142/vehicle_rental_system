@@ -7,14 +7,18 @@ const auth = (...roles: string[]) => {
         try {
             const bearerToken = req.headers.authorization;
             const token = bearerToken?.split(' ')[1];
-            const token1 = bearerToken?.split(' ')[0];
             console.log(bearerToken);
-            
+
             if (!token) {
                 res.status(500).json({ message: "You're not allowed" });
             }
             const decoded = jwt.verify(token as string, config.jwt_secret as string) as JwtPayload;
-            req.user = decoded;
+            console.log(decoded);
+            
+            req.user = {
+                id: decoded.id,
+                role: decoded.role,
+            };
             if (roles.length && !roles.includes(decoded.role as string)) {
                 return res.status(500).json({
                     success: false,

@@ -23,8 +23,8 @@ const createBooking = async (req: Request, res: Response) => {
 const getBookings = async (req: Request, res: Response) => {
     try {
         const loggedInUser = req.user!;
+        console.log("loggedInUser:", loggedInUser);
 
-        // ADMIN
         if (loggedInUser.role === "admin") {
             const result = await bookingServices.getAllBookingsForAdmin();
 
@@ -36,10 +36,18 @@ const getBookings = async (req: Request, res: Response) => {
             });
         }
 
-        // CUSTOMER (IMPORTANT)
-        const result = await bookingServices.getBookingsForCustomer(
-            loggedInUser.id
-        );
+        const customerId = Number(loggedInUser.id);
+        console.log(customerId);
+        
+        if (isNaN(customerId)) {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid user ID"
+            });
+        }
+
+
+        const result = await bookingServices.getBookingsForCustomer(customerId);
 
         return res.status(200).json({
             success: true,
@@ -55,6 +63,7 @@ const getBookings = async (req: Request, res: Response) => {
         });
     }
 };
+
 
 
 
