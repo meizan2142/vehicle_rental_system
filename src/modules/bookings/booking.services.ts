@@ -119,17 +119,17 @@ const getBookingsForCustomer = async (customerId: number) => {
     const result = await pool.query(
         `
     SELECT
-      b.id,
-      b.vehicle_id,
-      b.rent_start_date,
-      b.rent_end_date,
-      b.total_price,
-      b.status,
-      json_build_object(
+        b.id,
+        b.vehicle_id,
+        b.rent_start_date,
+        b.rent_end_date,
+        b.total_price,
+        b.status,
+        json_build_object(
         'vehicle_name', v.vehicle_name,
         'registration_number', v.registration_number,
         'type', v.type
-      ) AS vehicle
+    ) AS vehicle
     FROM bookings b
     JOIN vehicles v ON b.vehicle_id = v.id
     WHERE b.customer_id = $1
@@ -141,15 +141,56 @@ const getBookingsForCustomer = async (customerId: number) => {
         ...b,
         total_price: Number(b.total_price),
     }));
-    
+
     return result;
 };
 
+const updateBookingStatus = async (
+    bookingId: number,
+    status: string,
+    userRole: string
+) => {
+    // Lock the booking row for update
+    const bookingRes = await pool.query(
+        "SELECT * FROM bookings WHERE id = $1 FOR UPDATE",
+        [bookingId]
+    );
 
+    if (bookingRes.rows.length === 0) throw new Error("Booking not found");
+
+    const booking = bookingRes.rows[0];
+
+    // Customer can only cancel
+    if (userRole === "customer" && status === "cancelled") {
+        if (booking.status !== "active")
+            throw new Error("Only active bookings can be cancelled");
+    }
+
+    // Update booking status
+    const updateRes = await pool.query(
+        "UPDATE bookings SET status = $1 WHERE id = $2 RETURNING *",
+        [status, bookingId]
+    );
+
+    const updatedBooking = updateRes.rows[0];
+
+    let vehicleInfo = null;
+    // Admin marking as returned → make vehicle available
+    if (userRole === "admin" && status === "returned") {
+        const vehicleUpdateRes = await pool.query(
+            "UPDATE vehicles SET availability_status = 'available' WHERE id = $1 RETURNING availability_status",
+            [updatedBooking.vehicle_id]
+        );
+        vehicleInfo = vehicleUpdateRes.rows[0];
+    }
+
+    return { ...updatedBooking, vehicle: vehicleInfo };
+};
 
 
 export const bookingServices = {
     createBooking,
     getAllBookingsForAdmin,
-    getBookingsForCustomer
-}
+    getBookingsForCustomer,
+    updateBookingStatus
+};

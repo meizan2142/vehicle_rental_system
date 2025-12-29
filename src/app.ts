@@ -7,6 +7,7 @@ import { bookingRoutes } from "./modules/bookings/booking.routes";
 
 const app = express();
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 // * Initializing DB
 initDB();
@@ -29,6 +30,7 @@ app.use("/api/v1/vehicles/:id", vehicleRoutes);
 
 // * Bookings - CRUD
 app.use("/api/v1/bookings", bookingRoutes);
+app.use("/api/v1/bookings/:bookingId", bookingRoutes);
 
 
 // * 404 Route

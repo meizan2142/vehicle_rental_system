@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { userServices } from "./user.services";
+import { pool } from "../../config/db";
 
 
 
@@ -68,27 +69,38 @@ const updateSingleUser = async (req: Request, res: Response) => {
 }
 
 const deleteSingleUser = async (req: Request, res: Response) => {
+    const id = req.params.userId;
     try {
-        const result = await userServices.deleteSingleUser(req.params.userId!)
+        const userBooking = await pool.query(
+            `SELECT * FROM bookings WHERE customer_id=$1`, [id]
+        )
+        if (userBooking.rows.length > 0) {
+            return res.status(400).json({
+                success: false,
+                message: "Can't delete user because he has bookings",
+            })
+        }
+
+        const result = await userServices.deleteSingleUser(id);
         if (result.rowCount === 0) {
             res.status(404).json({
                 success: false,
-                message: "User not found"
-            })
-        }
-        else {
+                message: "user not found",
+            });
+        } else {
             res.status(200).json({
                 success: true,
                 message: "User deleted successfully"
-            })
+            });
         }
     } catch (error: any) {
         res.status(500).json({
             success: false,
-            message: error.message
-        })
+            message: error.message,
+        });
     }
 }
+
 
 
 export const userControllers = {

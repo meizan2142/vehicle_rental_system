@@ -38,7 +38,7 @@ const getBookings = async (req: Request, res: Response) => {
 
         const customerId = Number(loggedInUser.id);
         console.log(customerId);
-        
+
         if (isNaN(customerId)) {
             return res.status(400).json({
                 success: false,
@@ -64,13 +64,53 @@ const getBookings = async (req: Request, res: Response) => {
     }
 };
 
+const updateBooking = async (req: Request, res: Response) => {
+    try {
+        const bookingId = Number(req.params.bookingId);
+        const { status } = req.body || {};
+        console.log(req.body); // showing undefined
+        
+        const userRole = req.user!.role;
+        console.log(userRole);
+        
 
+        // Validate request
+        if (!status || !["cancelled", "returned"].includes(status)) {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid or missing status",
+            });
+        }
 
+        // Call service to update booking
+        const result = await bookingServices.updateBookingStatus(
+            bookingId,
+            status,
+            userRole
+        );
 
+        const message =
+            status === "cancelled"
+                ? "Booking cancelled successfully"
+                : "Booking marked as returned. Vehicle is now available";
+
+        return res.status(200).json({
+            success: true,
+            message,
+            data: result,
+        });
+    } catch (error: any) {
+        return res.status(500).json({
+            success: false,
+            message: error.message,
+        });
+    }
+};
 
 
 
 export const bookingControllers = {
     createBooking,
-    getBookings
-}
+    getBookings,
+    updateBooking
+};
