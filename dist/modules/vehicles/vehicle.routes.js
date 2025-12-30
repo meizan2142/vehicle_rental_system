@@ -11,6 +11,6 @@ const router = (0, express_1.Router)();
 router.post('/', (0, auth_1.default)("admin"), vehicle_controllers_1.vehicleControllers.createVehicle);
 router.get('/', vehicle_controllers_1.vehicleControllers.getVehicles);
 router.get('/:vehicleId', vehicle_controllers_1.vehicleControllers.getSingleVehicle);
-router.put('/:vehicleId', vehicle_controllers_1.vehicleControllers.updateSingleVehicle);
-router.delete('/:vehicleId', vehicle_controllers_1.vehicleControllers.deleteSingleTodo);
+router.put('/:vehicleId', (0, auth_1.default)("admin"), vehicle_controllers_1.vehicleControllers.updateSingleVehicle);
+router.delete('/:vehicleId', (0, auth_1.default)("admin"), vehicle_controllers_1.vehicleControllers.deleteSingleTodo);
 exports.vehicleRoutes = router;
