@@ -61,17 +61,16 @@ const updateBooking = async (req, res) => {
     try {
         const bookingId = Number(req.params.bookingId);
         const { status } = req.body || {};
-        console.log(req.body); // showing undefined
+        console.log(req.body);
         const userRole = req.user.role;
         console.log(userRole);
-        // Validate request
+        // * Validate request
         if (!status || !["cancelled", "returned"].includes(status)) {
             return res.status(400).json({
                 success: false,
                 message: "Invalid or missing status",
             });
         }
-        // Call service to update booking
         const result = await booking_services_1.bookingServices.updateBookingStatus(bookingId, status, userRole);
         const message = status === "cancelled"
             ? "Booking cancelled successfully"

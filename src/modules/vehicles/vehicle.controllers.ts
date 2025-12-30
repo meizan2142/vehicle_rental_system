@@ -24,13 +24,14 @@ const getVehicles = async (req: Request, res: Response) => {
         if (result.rows.length === 0) {
             res.status(200).json({
                 success: true,
-                message: "No vehicles found"
+                message: "No vehicles found",
+                data: []
             })
         }
         res.status(200).json({
             success: true,
-            message: "Vehicles retrieved successfully",
-            data: result.rows,
+            message: "Vehicle retrieved successfully",
+            data: result.rows[0],
         });
     } catch (error: any) {
         res.status(500).json({
@@ -52,7 +53,7 @@ const getSingleVehicle = async (req: Request, res: Response) => {
         res.status(200).json({
             success: true,
             message: "Vehicle retrieved successfully",
-            data: result.rows,
+            data: result.rows[0],
         });
     } catch (error: any) {
         res.status(500).json({

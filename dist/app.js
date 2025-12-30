@@ -22,13 +22,10 @@ app.get("/", (req, res) => {
 app.use("/api/v1/auth", auth_routes_1.authRoutes);
 // * Users - CRUD
 app.use("/api/v1/users", user_routes_1.userRoutes);
-app.use("/api/v1/users/:id", user_routes_1.userRoutes);
 // * Vehicles - CRUD
 app.use("/api/v1/vehicles", vehicle_routes_1.vehicleRoutes);
-app.use("/api/v1/vehicles/:id", vehicle_routes_1.vehicleRoutes);
 // * Bookings - CRUD
 app.use("/api/v1/bookings", booking_routes_1.bookingRoutes);
-app.use("/api/v1/bookings/:bookingId", booking_routes_1.bookingRoutes);
 // * 404 Route
 app.use((req, res) => {
     res.status(404).json({

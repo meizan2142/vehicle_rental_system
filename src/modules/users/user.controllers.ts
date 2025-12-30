@@ -34,7 +34,11 @@ const getSingleUser = async (req: Request, res: Response) => {
                 message: "No users found"
             })
         }
-        res.json(result.rows[0])
+        res.status(200).json({
+            success: true,
+            message: "User retrieved successfully",
+            data: result.rows[0]
+        })
     } catch (error: any) {
         res.status(500).json({
             success: false,
@@ -77,7 +81,7 @@ const deleteSingleUser = async (req: Request, res: Response) => {
         if (userBooking.rows.length > 0) {
             return res.status(400).json({
                 success: false,
-                message: "Can't delete user because he has bookings",
+                message: "User deletion is not permitted due to existing booking records.",
             })
         }
 

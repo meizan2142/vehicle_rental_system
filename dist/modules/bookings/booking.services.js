@@ -64,21 +64,21 @@ const createBooking = async (payload) => {
 const getAllBookingsForAdmin = async () => {
     const result = await db_1.pool.query(`
     SELECT 
-      b.id,
-      b.customer_id,
-      b.vehicle_id,
-      b.rent_start_date,
-      b.rent_end_date,
-      b.total_price,
-      b.status,
-      json_build_object(
+        b.id,
+        b.customer_id,
+        b.vehicle_id,
+        b.rent_start_date,
+        b.rent_end_date,
+        b.total_price,
+        b.status,
+        json_build_object(
         'name', u.name,
         'email', u.email
-      ) AS customer,
-      json_build_object(
+    ) AS customer,
+    json_build_object(
         'vehicle_name', v.vehicle_name,
         'registration_number', v.registration_number
-      ) AS vehicle
+    ) AS vehicle
     FROM bookings b
     JOIN users u ON b.customer_id = u.id
     JOIN vehicles v ON b.vehicle_id = v.id
@@ -114,21 +114,17 @@ const getBookingsForCustomer = async (customerId) => {
     return result;
 };
 const updateBookingStatus = async (bookingId, status, userRole) => {
-    // Lock the booking row for update
     const bookingRes = await db_1.pool.query("SELECT * FROM bookings WHERE id = $1 FOR UPDATE", [bookingId]);
     if (bookingRes.rows.length === 0)
         throw new Error("Booking not found");
     const booking = bookingRes.rows[0];
-    // Customer can only cancel
     if (userRole === "customer" && status === "cancelled") {
         if (booking.status !== "active")
             throw new Error("Only active bookings can be cancelled");
     }
-    // Update booking status
     const updateRes = await db_1.pool.query("UPDATE bookings SET status = $1 WHERE id = $2 RETURNING *", [status, bookingId]);
     const updatedBooking = updateRes.rows[0];
     let vehicleInfo = null;
-    // Admin marking as returned → make vehicle available
     if (userRole === "admin" && status === "returned") {
         const vehicleUpdateRes = await db_1.pool.query("UPDATE vehicles SET availability_status = 'available' WHERE id = $1 RETURNING availability_status", [updatedBooking.vehicle_id]);
         vehicleInfo = vehicleUpdateRes.rows[0];

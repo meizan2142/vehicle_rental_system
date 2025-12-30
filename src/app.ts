@@ -22,15 +22,12 @@ app.use("/api/v1/auth", authRoutes);
 
 // * Users - CRUD
 app.use("/api/v1/users", userRoutes)
-app.use("/api/v1/users/:id", userRoutes)
 
 // * Vehicles - CRUD
 app.use("/api/v1/vehicles", vehicleRoutes);
-app.use("/api/v1/vehicles/:id", vehicleRoutes);
 
 // * Bookings - CRUD
 app.use("/api/v1/bookings", bookingRoutes);
-app.use("/api/v1/bookings/:bookingId", bookingRoutes);
 
 
 // * 404 Route
